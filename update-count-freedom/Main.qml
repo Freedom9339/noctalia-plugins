@@ -8,7 +8,7 @@ Item {
 
   property var pluginApi: null
 
-  readonly property url updaterJson: Qt.resolvedUrl("file://" + Settings.configDir + "/plugins/update-count-freedom/updaterConfigs.json")
+  readonly property url updaterJson: Qt.resolvedUrl("updaterConfigs.json")
   readonly property int minutesToMillis: 60_000
 
   readonly property int updateIntervalMinutes: pluginApi?.pluginSettings.updateIntervalMinutes || pluginApi?.manifest?.metadata.defaultSettings?.updateIntervalMinutes || 30
