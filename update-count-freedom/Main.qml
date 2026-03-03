@@ -8,7 +8,7 @@ Item {
 
   property var pluginApi: null
 
-  readonly property url updaterJson: Qt.resolvedUrl("file://" + Settings.configDir + "/plugins/update-count/updaterConfigs.json")
+  readonly property url updaterJson: Qt.resolvedUrl("file://" + Settings.configDir + "/plugins/update-count-freedom/updaterConfigs.json")
   readonly property int minutesToMillis: 60_000
 
   readonly property int updateIntervalMinutes: pluginApi?.pluginSettings.updateIntervalMinutes || pluginApi?.manifest?.metadata.defaultSettings?.updateIntervalMinutes || 30
@@ -155,7 +155,7 @@ Item {
   //
   function startDoSystemUpdate() {
     const updateCmd = root.customUpdater.cmdDoSystemUpdate || root.updater.cmdDoSystemUpdate || "echo 'No update cmd found.'"
-    const ipcCmd = "qs -c noctalia-shell ipc call plugin:update-count check"
+    const ipcCmd = "qs -c noctalia-shell ipc call plugin:update-count-freedom check"
     const combinedCmd = updateCmd + " && " + ipcCmd
 
     const term = root.updateTerminalCommand.trim();
@@ -175,7 +175,7 @@ Item {
   // ------ IPC ------
   //
   IpcHandler {
-    target: "plugin:update-count"
+    target: "plugin:update-count-freedom"
 
     function check(): void {
       root.startGetNumUpdates()
