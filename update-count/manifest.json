@@ -1,11 +1,11 @@
 {
-  "id": "update-count",
-  "name": "Update Count",
+  "id": "update-count-freedom",
+  "name": "Update Widget",
   "version": "1.0.12",
   "minNoctaliaVersion": "3.6.0",
   "author": "BukoMoon",
   "license": "GPLv3",
-  "repository": "https://github.com/noctalia-dev/noctalia-plugins",
+  "repository": "https://github.com/Freedom9339/noctalia-plugins",
   "description": "Checks for system updates and shows the update count. Click to run update command in a terminal.",
   "tags": ["Bar", "System"],
   "entryPoints": {
@@ -19,7 +19,7 @@
   "metadata": {
     "defaultSettings": {
       "updateIntervalMinutes": 30,
-      "updateTerminalCommand": "foot -e",
+      "updateTerminalCommand": "kitty",
       "currentIconName": "world-download",
       "hideOnZero": false
     }

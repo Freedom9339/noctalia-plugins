@@ -101,12 +101,26 @@ Item {
   }
 
   function buildTooltip() {
-    const updateCount = root.pluginApi?.mainInstance?.updateCount
+    const mainInst = root.pluginApi ? root.pluginApi.mainInstance : null
+    const updateCount = mainInst ? mainInst.updateCount : 0
 
     if (updateCount === 0) {
       TooltipService.show(root, pluginApi?.tr("tooltip.noUpdatesAvailable"), BarService.getTooltipDirection(root.screenName));
     } else {
-      TooltipService.show(root, pluginApi?.tr("tooltip.updatesAvailable"), BarService.getTooltipDirection(root.screenName));
+      var pacman = 0;
+      var aur = 0;
+      var flatpak = 0;
+      if (mainInst) {
+        pacman = mainInst.pacmanCount || 0;
+        aur = mainInst.aurCount || 0;
+        flatpak = mainInst.flatpakCount || 0;
+      }
+      var lines = [];
+      if (pacman > 0) lines.push("Pacman: " + pacman);
+      if (aur > 0) lines.push("AUR: " + aur);
+      if (flatpak > 0) lines.push("Flatpak: " + flatpak);
+      var detail = lines.length > 0 ? lines.join("\n") : (updateCount + " updates available");
+      TooltipService.show(root, detail, BarService.getTooltipDirection(root.screenName));
     }
   }
 }

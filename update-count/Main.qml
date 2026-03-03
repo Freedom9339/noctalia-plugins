@@ -15,6 +15,9 @@ Item {
   readonly property string updateTerminalCommand: pluginApi?.pluginSettings.updateTerminalCommand || pluginApi?.manifest?.metadata.defaultSettings?.updateTerminalCommand || ""
 
   property int updateCount: 0
+  property int pacmanCount: 0
+  property int aurCount: 0
+  property int flatpakCount: 0
   property var updater: null
   property var customUpdater: ({
     name: "custom",
@@ -95,6 +98,19 @@ Item {
     getNumUpdates.running = true;
   }
 
+  function startGetIndividualCounts() {
+    const updaterName = root.updater ? root.updater.name : "";
+    var aurCmd = "echo 0";
+    if (updaterName === "yay") {
+      aurCmd = "yay -Qua 2>/dev/null | wc -l";
+    } else if (updaterName === "paru") {
+      aurCmd = "paru -Qua 2>/dev/null | wc -l";
+    }
+    const combinedCmd = 'echo "pacman:$(checkupdates 2>/dev/null | wc -l)" && echo "aur:$(' + aurCmd + ')" && echo "flatpak:$(flatpak remote-ls --updates 2>/dev/null | wc -l)"';
+    getIndividualCounts.command = ["sh", "-c", combinedCmd];
+    getIndividualCounts.running = true;
+  }
+
   Process {
     id: getNumUpdates
 
@@ -107,6 +123,29 @@ Item {
         } else {
           Logger.e("UpdateCount", `getNumUpdates return '${text.trim()}' cannot be parsed into int`);
         }
+        // Fetch individual counts after main count finishes to avoid checkupdates race
+        root.startGetIndividualCounts();
+      }
+    }
+  }
+
+  Process {
+    id: getIndividualCounts
+    stdout: StdioCollector {
+      onStreamFinished: {
+        var lines = text.trim().split("\n");
+        for (var i = 0; i < lines.length; i++) {
+          var parts = lines[i].split(":");
+          if (parts.length === 2) {
+            var key = parts[0].trim();
+            var val = parseInt(parts[1].trim());
+            if (isNaN(val)) val = 0;
+            if (key === "pacman") root.pacmanCount = val;
+            else if (key === "aur") root.aurCount = val;
+            else if (key === "flatpak") root.flatpakCount = val;
+          }
+        }
+        Logger.i("UpdateCount", `Individual counts - Pacman: ${root.pacmanCount}, AUR: ${root.aurCount}, Flatpak: ${root.flatpakCount}`);
       }
     }
   }
