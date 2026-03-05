@@ -8,7 +8,7 @@ Item {
 
   property var pluginApi: null
 
-  readonly property url updaterJson: Qt.resolvedUrl("updaterConfigs.json")
+  readonly property string updaterJson: (pluginApi?.pluginDir ?? "") + "/updaterConfigs.json"
   readonly property int minutesToMillis: 60_000
 
   readonly property int updateIntervalMinutes: pluginApi?.pluginSettings.updateIntervalMinutes || pluginApi?.manifest?.metadata.defaultSettings?.updateIntervalMinutes || 30
@@ -169,6 +169,10 @@ Item {
 
   Process {
     id: doSystemUpdate
+
+    onExited: function (exitCode, exitStatus) {
+      root.startGetNumUpdates();
+    }
   }
 
   //
