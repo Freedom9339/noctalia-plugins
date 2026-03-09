@@ -20,7 +20,7 @@
     {
       "id": "firefox-launcher",
       "name": "Firefox Launcher",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "official": false,
       "author": "Freedom",
       "description": "A Firefox launcher button. Click to open Firefox, right-click for New Window, New Private Window, and Settings.",
