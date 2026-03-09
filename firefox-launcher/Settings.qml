@@ -9,14 +9,14 @@ ColumnLayout {
 
   property var pluginApi: null
 
-  property string iconColor: pluginApi?.pluginSettings?.iconColor || pluginApi?.manifest?.metadata?.defaultSettings?.iconColor || "mOnSurface"
+  property string iconColor: pluginApi?.pluginSettings?.iconColor || pluginApi?.manifest?.metadata?.defaultSettings?.iconColor || "none"
 
   readonly property var colorOptions: [
-    { name: "mPrimary",     label: "Primary",      color: Color.mPrimary },
-    { name: "mOnPrimary",   label: "On Primary",   color: Color.mOnPrimary },
-    { name: "mSecondary",   label: "Secondary",    color: Color.mSecondary },
-    { name: "mOnSecondary", label: "On Secondary", color: Color.mOnSecondary },
-    { name: "mOnSurface",   label: "On Surface",   color: Color.mOnSurface },
+    { name: "none",      label: "None",      color: Color.mOnSurface },
+    { name: "primary",   label: "Primary",   color: Color.mPrimary },
+    { name: "secondary", label: "Secondary", color: Color.mSecondary },
+    { name: "tertiary",  label: "Tertiary",  color: Color.mTertiary },
+    { name: "error",     label: "Error",     color: Color.mError },
   ]
 
   spacing: Style.marginL

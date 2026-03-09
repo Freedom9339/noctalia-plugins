@@ -22,7 +22,7 @@ Item {
   readonly property real capsuleHeight: Style.getCapsuleHeightForScreen(screenName)
   readonly property real barFontSize: Style.getBarFontSizeForScreen(screenName)
 
-  property string iconColorName: pluginApi?.pluginSettings?.iconColor || pluginApi?.manifest?.metadata?.defaultSettings?.iconColor || "mOnSurface"
+  property string iconColorName: pluginApi?.pluginSettings?.iconColor || pluginApi?.manifest?.metadata?.defaultSettings?.iconColor || "none"
 
   readonly property real contentWidth: isVertical ? root.capsuleHeight : iconItem.implicitWidth + Style.marginS * 2
   readonly property real contentHeight: isVertical ? iconItem.implicitHeight + Style.marginS * 2 : root.capsuleHeight

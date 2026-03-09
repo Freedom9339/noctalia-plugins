@@ -1,7 +1,7 @@
 {
   "id": "firefox-launcher",
   "name": "Firefox Launcher",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "minNoctaliaVersion": "3.6.0",
   "author": "Freedom",
   "license": "GPLv3",
@@ -18,7 +18,7 @@
   },
   "metadata": {
     "defaultSettings": {
-      "iconColor": "mOnSurface"
+      "iconColor": "none"
     }
   }
 }
