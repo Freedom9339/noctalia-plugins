@@ -22,7 +22,8 @@ Item {
   readonly property real capsuleHeight: Style.getCapsuleHeightForScreen(screenName)
   readonly property real barFontSize: Style.getBarFontSizeForScreen(screenName)
 
-  property string iconColorName: pluginApi?.pluginSettings?.iconColor || pluginApi?.manifest?.metadata?.defaultSettings?.iconColor || "none"
+  property string iconColorName: pluginApi?.pluginSettings?.iconColor ?? pluginApi?.manifest?.metadata?.defaultSettings?.iconColor ?? "none"
+  readonly property color iconColor: Color.resolveColorKey(iconColorName)
 
   readonly property real contentWidth: isVertical ? root.capsuleHeight : iconItem.implicitWidth + Style.marginS * 2
   readonly property real contentHeight: isVertical ? iconItem.implicitHeight + Style.marginS * 2 : root.capsuleHeight
@@ -48,7 +49,7 @@ Item {
       id: iconItem
       anchors.centerIn: parent
       icon: "brand-firefox"
-      color: root.hovered ? Color.mOnHover : Color.resolveColorKey(root.iconColorName)
+      color: root.hovered ? Color.mOnHover : root.iconColor
     }
   }
 
