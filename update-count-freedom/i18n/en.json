@@ -43,5 +43,9 @@
   "tooltip": {
     "noUpdatesAvailable": "No updates detected",
     "updatesAvailable": "Click to run the configured system update command"
+  },
+  "contextMenu": {
+    "updateAll": "Update All",
+    "refresh": "Refresh"
   }
 }

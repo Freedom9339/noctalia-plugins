@@ -18,6 +18,9 @@ Item {
   property int pacmanCount: 0
   property int aurCount: 0
   property int flatpakCount: 0
+  property var pacmanPackages: []
+  property var aurPackages: []
+  property var flatpakPackages: []
   property var updater: null
   property var customUpdater: ({
     name: "custom",
@@ -100,13 +103,13 @@ Item {
 
   function startGetIndividualCounts() {
     const updaterName = root.updater ? root.updater.name : "";
-    var aurCmd = "echo 0";
+    var aurCmd = "true";
     if (updaterName === "yay") {
-      aurCmd = "yay -Qua 2>/dev/null | wc -l";
+      aurCmd = "yay -Qua 2>/dev/null";
     } else if (updaterName === "paru") {
-      aurCmd = "paru -Qua 2>/dev/null | wc -l";
+      aurCmd = "paru -Qua 2>/dev/null";
     }
-    const combinedCmd = 'echo "pacman:$(checkupdates 2>/dev/null | wc -l)" && echo "aur:$(' + aurCmd + ')" && echo "flatpak:$(flatpak remote-ls --updates 2>/dev/null | wc -l)"';
+    const combinedCmd = 'echo "---PACMAN---" && checkupdates 2>/dev/null; echo "---AUR---" && ' + aurCmd + '; echo "---FLATPAK---" && flatpak remote-ls --updates 2>/dev/null; echo "---END---"';
     getIndividualCounts.command = ["sh", "-c", combinedCmd];
     getIndividualCounts.running = true;
   }
@@ -134,17 +137,35 @@ Item {
     stdout: StdioCollector {
       onStreamFinished: {
         var lines = text.trim().split("\n");
+        var section = "";
+        var pacmanPkgs = [];
+        var aurPkgs = [];
+        var flatpakPkgs = [];
+
         for (var i = 0; i < lines.length; i++) {
-          var parts = lines[i].split(":");
-          if (parts.length === 2) {
-            var key = parts[0].trim();
-            var val = parseInt(parts[1].trim());
-            if (isNaN(val)) val = 0;
-            if (key === "pacman") root.pacmanCount = val;
-            else if (key === "aur") root.aurCount = val;
-            else if (key === "flatpak") root.flatpakCount = val;
-          }
+          var line = lines[i].trim();
+          if (line === "---PACMAN---") { section = "pacman"; continue; }
+          if (line === "---AUR---") { section = "aur"; continue; }
+          if (line === "---FLATPAK---") { section = "flatpak"; continue; }
+          if (line === "---END---") { break; }
+          if (line === "") continue;
+
+          // Extract just the package name (first column)
+          var pkgName = line.split(/\s+/)[0];
+          if (!pkgName) continue;
+
+          if (section === "pacman") pacmanPkgs.push(pkgName);
+          else if (section === "aur") aurPkgs.push(pkgName);
+          else if (section === "flatpak") flatpakPkgs.push(pkgName);
         }
+
+        root.pacmanCount = pacmanPkgs.length;
+        root.aurCount = aurPkgs.length;
+        root.flatpakCount = flatpakPkgs.length;
+        root.pacmanPackages = pacmanPkgs;
+        root.aurPackages = aurPkgs;
+        root.flatpakPackages = flatpakPkgs;
+
         Logger.i("UpdateCount", `Individual counts - Pacman: ${root.pacmanCount}, AUR: ${root.aurCount}, Flatpak: ${root.flatpakCount}`);
       }
     }

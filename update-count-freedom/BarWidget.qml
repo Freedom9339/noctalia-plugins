@@ -82,11 +82,16 @@ Item {
   MouseArea {
     anchors.fill: parent
     hoverEnabled: true
+    acceptedButtons: Qt.LeftButton | Qt.RightButton
     cursorShape: root.pluginApi?.mainInstance?.updateCount > 0 ? Qt.PointingHandCursor : Qt.ArrowCursor
 
-    onClicked: {
-      if (root.pluginApi?.mainInstance?.updateCount > 0)
+    onClicked: (mouse) => {
+      if (mouse.button === Qt.RightButton) {
+        root.buildContextMenu();
+        PanelService.showContextMenu(contextMenu, root, screen);
+      } else if (root.pluginApi?.mainInstance?.updateCount > 0) {
         root.pluginApi?.mainInstance?.startDoSystemUpdate();
+      }
     }
 
     onEntered: {
@@ -98,6 +103,69 @@ Item {
       root.hovered = false;
       TooltipService.hide();
     }
+  }
+
+  NPopupContextMenu {
+    id: contextMenu
+
+    model: []
+
+    onTriggered: action => {
+      contextMenu.close();
+      PanelService.closeContextMenu(screen);
+
+      if (action === "update") {
+        root.pluginApi?.mainInstance?.startDoSystemUpdate();
+      } else if (action === "refresh") {
+        root.pluginApi?.mainInstance?.startGetNumUpdates();
+      } else if (action === "widget-settings") {
+        BarService.openPluginSettings(screen, pluginApi.manifest);
+      }
+    }
+  }
+
+  function buildContextMenu() {
+    const mainInst = root.pluginApi ? root.pluginApi.mainInstance : null;
+    if (!mainInst) return;
+
+    var items = [];
+    var pacmanPkgs = mainInst.pacmanPackages || [];
+    var aurPkgs = mainInst.aurPackages || [];
+    var flatpakPkgs = mainInst.flatpakPackages || [];
+
+    if (pacmanPkgs.length > 0) {
+      items.push({ label: "Pacman (" + pacmanPkgs.length + ")", icon: "package", enabled: false });
+      for (var i = 0; i < pacmanPkgs.length; i++) {
+        items.push({ label: "  " + pacmanPkgs[i], action: "pkg", icon: "point" });
+      }
+    }
+
+    if (aurPkgs.length > 0) {
+      items.push({ label: "AUR (" + aurPkgs.length + ")", icon: "package", enabled: false });
+      for (var i = 0; i < aurPkgs.length; i++) {
+        items.push({ label: "  " + aurPkgs[i], action: "pkg", icon: "point" });
+      }
+    }
+
+    if (flatpakPkgs.length > 0) {
+      items.push({ label: "Flatpak (" + flatpakPkgs.length + ")", icon: "package", enabled: false });
+      for (var i = 0; i < flatpakPkgs.length; i++) {
+        items.push({ label: "  " + flatpakPkgs[i], action: "pkg", icon: "point" });
+      }
+    }
+
+    if (items.length === 0) {
+      items.push({ label: pluginApi?.tr("tooltip.noUpdatesAvailable") || "No updates detected", icon: "circle-check", enabled: false });
+    }
+
+    items.push({ label: "", enabled: false, visible: false }); // spacer
+    if (mainInst.updateCount > 0) {
+      items.push({ label: pluginApi?.tr("contextMenu.updateAll") || "Update All", action: "update", icon: "download" });
+    }
+    items.push({ label: pluginApi?.tr("contextMenu.refresh") || "Refresh", action: "refresh", icon: "refresh" });
+    items.push({ label: I18n.tr("actions.widget-settings"), action: "widget-settings", icon: "palette" });
+
+    contextMenu.model = items;
   }
 
   function buildTooltip() {
