@@ -1,0 +1,19 @@
+{
+  "settings": {
+    "iconColor": {
+      "label": "Icon Color",
+      "desc": "Choose a theme color for the Firefox icon."
+    }
+  },
+  "contextMenu": {
+    "newWindow": {
+      "label": "New Window"
+    },
+    "newPrivateWindow": {
+      "label": "New Private Window"
+    },
+    "settings": {
+      "label": "Settings"
+    }
+  }
+}

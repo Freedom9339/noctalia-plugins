@@ -1,0 +1,24 @@
+{
+  "id": "firefox-launcher",
+  "name": "Firefox Launcher",
+  "version": "1.0.0",
+  "minNoctaliaVersion": "3.6.0",
+  "author": "Freedom",
+  "license": "GPLv3",
+  "repository": "https://github.com/Freedom9339/noctalia-plugins",
+  "description": "A Firefox launcher button. Click to open Firefox, right-click for New Window, New Private Window, and Settings.",
+  "tags": ["Bar", "Launcher"],
+  "entryPoints": {
+    "main": "Main.qml",
+    "barWidget": "BarWidget.qml",
+    "settings": "Settings.qml"
+  },
+  "dependencies": {
+    "plugins": []
+  },
+  "metadata": {
+    "defaultSettings": {
+      "iconColor": "mOnSurface"
+    }
+  }
+}

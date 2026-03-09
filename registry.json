@@ -16,6 +16,22 @@
         "System"
       ],
       "lastUpdated": "2026-03-05T21:01:51-05:00"
+    },
+    {
+      "id": "firefox-launcher",
+      "name": "Firefox Launcher",
+      "version": "1.0.0",
+      "official": false,
+      "author": "Freedom",
+      "description": "A Firefox launcher button. Click to open Firefox, right-click for New Window, New Private Window, and Settings.",
+      "repository": "https://github.com/Freedom9339/noctalia-plugins",
+      "minNoctaliaVersion": "3.6.0",
+      "license": "GPLv3",
+      "tags": [
+        "Bar",
+        "Launcher"
+      ],
+      "lastUpdated": "2026-03-09T00:00:00-05:00"
     }
   ]
 }
