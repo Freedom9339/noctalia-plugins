@@ -62,7 +62,7 @@ ColumnLayout {
 
     NIcon {
       icon: "brand-firefox"
-      color: root.colorOptions.find(function (o) { return o.name === root.iconColor; })?.color || Color.mOnSurface
+      color: Color.resolveColorKey(root.iconColor)
     }
   }
 

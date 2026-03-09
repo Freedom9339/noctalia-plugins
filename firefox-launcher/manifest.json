@@ -1,7 +1,7 @@
 {
   "id": "firefox-launcher",
   "name": "Firefox Launcher",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "minNoctaliaVersion": "3.6.0",
   "author": "Freedom",
   "license": "GPLv3",

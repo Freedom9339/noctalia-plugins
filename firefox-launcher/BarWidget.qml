@@ -24,17 +24,6 @@ Item {
 
   property string iconColorName: pluginApi?.pluginSettings?.iconColor || pluginApi?.manifest?.metadata?.defaultSettings?.iconColor || "mOnSurface"
 
-  function resolveColor(name) {
-    switch (name) {
-      case "mPrimary":     return Color.mPrimary;
-      case "mOnPrimary":   return Color.mOnPrimary;
-      case "mSecondary":   return Color.mSecondary;
-      case "mOnSecondary": return Color.mOnSecondary;
-      case "mOnSurface":   return Color.mOnSurface;
-      default:             return Color.mOnSurface;
-    }
-  }
-
   readonly property real contentWidth: isVertical ? root.capsuleHeight : iconItem.implicitWidth + Style.marginS * 2
   readonly property real contentHeight: isVertical ? iconItem.implicitHeight + Style.marginS * 2 : root.capsuleHeight
 
@@ -59,7 +48,49 @@ Item {
       id: iconItem
       anchors.centerIn: parent
       icon: "brand-firefox"
-      color: root.hovered ? Color.mOnHover : root.resolveColor(root.iconColorName)
+      color: root.hovered ? Color.mOnHover : Color.resolveColorKey(root.iconColorName)
+    }
+  }
+
+  NPopupContextMenu {
+    id: contextMenu
+
+    model: [
+      {
+        "label": "New Window",
+        "action": "new-window",
+        "icon": "browser"
+      },
+      {
+        "label": "New Private Window",
+        "action": "private-window",
+        "icon": "eye-off"
+      },
+      {
+        "label": "Settings",
+        "action": "firefox-settings",
+        "icon": "settings"
+      },
+      {
+        "label": I18n.tr("actions.widget-settings"),
+        "action": "widget-settings",
+        "icon": "palette"
+      }
+    ]
+
+    onTriggered: action => {
+      contextMenu.close();
+      PanelService.closeContextMenu(screen);
+
+      if (action === "new-window") {
+        root.pluginApi?.mainInstance?.launchNewWindow();
+      } else if (action === "private-window") {
+        root.pluginApi?.mainInstance?.launchPrivateWindow();
+      } else if (action === "firefox-settings") {
+        root.pluginApi?.mainInstance?.openSettings();
+      } else if (action === "widget-settings") {
+        BarService.openPluginSettings(screen, pluginApi.manifest);
+      }
     }
   }
 
@@ -69,9 +100,9 @@ Item {
     acceptedButtons: Qt.LeftButton | Qt.RightButton
     cursorShape: Qt.PointingHandCursor
 
-    onClicked: function (mouse) {
+    onClicked: (mouse) => {
       if (mouse.button === Qt.RightButton) {
-        contextMenu.visible = !contextMenu.visible;
+        PanelService.showContextMenu(contextMenu, root, screen);
       } else {
         root.pluginApi?.mainInstance?.launchFirefox();
       }
@@ -85,79 +116,6 @@ Item {
     onExited: {
       root.hovered = false;
       TooltipService.hide();
-    }
-  }
-
-  PopupWindow {
-    id: contextMenu
-    anchor.window: root.QsWindow.window
-    anchor.rect.x: root.mapToItem(null, 0, 0).x
-    anchor.rect.y: root.mapToItem(null, 0, 0).y
-    anchor.rect.width: root.width
-    anchor.rect.height: root.height
-    anchor.edges: root.barPosition === "bottom" ? Edges.Top : Edges.Bottom
-    anchor.gravity: root.barPosition === "bottom" ? Edges.Top : Edges.Bottom
-    visible: false
-    color: "transparent"
-    width: menuColumn.implicitWidth
-    height: menuColumn.implicitHeight
-
-    onVisibleChanged: {
-      if (!visible) return;
-      // Close when clicking outside
-    }
-
-    Rectangle {
-      anchors.fill: parent
-      color: Style.capsuleColor
-      radius: Style.radiusM
-      border.color: Style.capsuleBorderColor
-      border.width: Style.capsuleBorderWidth
-
-      ColumnLayout {
-        id: menuColumn
-        anchors.fill: parent
-        spacing: 0
-
-        Repeater {
-          model: [
-            { label: "New Window",         action: function() { root.pluginApi?.mainInstance?.launchNewWindow(); } },
-            { label: "New Private Window", action: function() { root.pluginApi?.mainInstance?.launchPrivateWindow(); } },
-            { label: "Settings",           action: function() { root.pluginApi?.mainInstance?.openSettings(); } }
-          ]
-
-          Rectangle {
-            required property var modelData
-            required property int index
-
-            Layout.fillWidth: true
-            Layout.preferredHeight: menuItemText.implicitHeight + Style.marginM * 2
-            Layout.preferredWidth: menuItemText.implicitWidth + Style.marginL * 2
-            color: menuItemMouse.containsMouse ? Color.mHover : "transparent"
-            radius: Style.radiusM
-
-            NText {
-              id: menuItemText
-              anchors.centerIn: parent
-              anchors.leftMargin: Style.marginL
-              anchors.rightMargin: Style.marginL
-              text: modelData.label
-              color: menuItemMouse.containsMouse ? Color.mOnHover : Color.mOnSurface
-            }
-
-            MouseArea {
-              id: menuItemMouse
-              anchors.fill: parent
-              hoverEnabled: true
-              cursorShape: Qt.PointingHandCursor
-              onClicked: {
-                modelData.action();
-                contextMenu.visible = false;
-              }
-            }
-          }
-        }
-      }
     }
   }
 }
